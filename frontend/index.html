@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>MoneyWise</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>MoneyWise</h1>
+        <p>Understand your money. Control your spending.</p>
+    </header>
+
+    <main>
+        <div id="notification" class="notification"></div>
+
+        <section class="month-selector">
+
+    <button
+        id="previousMonth"
+        type="button"
+    >
+        ←
+    </button>
+
+    <h2 id="monthTitle">
+        August 2026
+    </h2>
+
+    <button
+        id="nextMonth"
+        type="button"
+    >
+        →
+    </button>
+
+</section>
+        <section class="dashboard">
+
+            <div class="card">
+                <h3>Income</h3>
+                <p id="income">¥0</p>
+            </div>
+
+            <div class="card">
+                <h3>Expenses</h3>
+                <p id="expenses">¥0</p>
+            </div>
+
+            <div class="card">
+                <h3>Remaining</h3>
+                <p id="remaining">¥0</p>
+            </div>
+
+        </section>
+        <section class="breakdown-section">
+
+    <h2>Expense Breakdown</h2>
+
+    <div id="expenseBreakdown">
+        <p>Loading...</p>
+    </div>
+
+</section>
+
+        <section class="chart-section">
+
+    <h2>Income vs Expenses</h2>
+
+    <div class="chart-container">
+        <canvas id="incomeExpenseChart"></canvas>
+    </div>
+
+</section>
+        <section class="form-section">
+
+    <h2>Add Income</h2>
+
+    <form id="incomeForm">
+
+        <div class="form-group">
+            <label for="incomeCategory">Income Type</label>
+
+            <select id="incomeCategory" required>
+                <option value="">Select income type</option>
+                <option value="1">Salary</option>
+                <option value="2">Part-time Job</option>
+                <option value="3">Bonus</option>
+                <option value="4">Other Income</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="incomeAmount">Amount (¥)</label>
+
+            <input
+                type="number"
+                id="incomeAmount"
+                min="1"
+                placeholder="230000"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="incomeDescription">Description</label>
+
+            <input
+                type="text"
+                id="incomeDescription"
+                placeholder="August Salary"
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="incomeDate">Date</label>
+
+            <input
+                type="date"
+                id="incomeDate"
+                required
+            >
+        </div>
+
+        <button type="submit">
+            Add Income
+        </button>
+
+    </form>
+
+    <p id="incomeMessage"></p>
+
+</section>
+<section class="form-section">
+
+    <h2>Add Expense</h2>
+
+    <form id="expenseForm">
+
+        <div class="form-group">
+            <label for="expenseCategory">Category</label>
+
+            <select id="expenseCategory" required>
+                <option value="">Select category</option>
+                <option value="5">Food</option>
+                <option value="6">Drink</option>
+                <option value="7">Cigarette</option>
+                <option value="8">Alcohol</option>
+                <option value="9">Transportation</option>
+                <option value="10">Shopping</option>
+                <option value="11">Entertainment</option>
+                <option value="12">Healthcare</option>
+                <option value="13">Rent</option>
+                <option value="14">Electricity</option>
+                <option value="15">Water</option>
+                <option value="16">Phone</option>
+                <option value="17">Insurance</option>
+                <option value="18">Tax</option>
+                <option value="19">Groceries</option>
+                <option value="20">Other</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="expenseAmount">Amount (¥)</label>
+
+            <input
+                type="number"
+                id="expenseAmount"
+                min="1"
+                placeholder="850"
+                required
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="expenseDescription">Description</label>
+
+            <input
+                type="text"
+                id="expenseDescription"
+                placeholder="Lunch"
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="expenseDate">Date</label>
+
+            <input
+                type="date"
+                id="expenseDate"
+                required
+            >
+        </div>
+
+        <button type="submit">
+            Add Expense
+        </button>
+
+    </form>
+
+    <p id="expenseMessage"></p>
+
+</section>
+<section class="history-section">
+
+    <h2>Income History</h2>
+
+    <div id="incomeHistory"></div>
+
+</section>
+<section class="history-section">
+
+    <h2>Expense History</h2>
+
+    <div id="expenseHistory"></div>
+
+</section>
+
+    </main>
+    <div id="editModal" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h2>Edit Expense</h2>
+
+            <button
+                type="button"
+                class="close-btn"
+                onclick="closeEditModal()"
+            >
+                ×
+            </button>
+        </div>
+
+        <form id="editExpenseForm">
+
+            <div class="form-group">
+
+                <label for="editExpenseCategory">
+                    Category
+                </label>
+
+                <select
+                    id="editExpenseCategory"
+                    required
+                >
+                    <option value="">Select category</option>
+                    <option value="5">Food</option>
+                    <option value="6">Drink</option>
+                    <option value="7">Cigarette</option>
+                    <option value="8">Alcohol</option>
+                    <option value="9">Transportation</option>
+                    <option value="10">Shopping</option>
+                    <option value="11">Entertainment</option>
+                    <option value="12">Healthcare</option>
+                    <option value="13">Rent</option>
+                    <option value="14">Electricity</option>
+                    <option value="15">Water</option>
+                    <option value="16">Phone</option>
+                    <option value="17">Insurance</option>
+                    <option value="18">Tax</option>
+                    <option value="19">Groceries</option>
+                    <option value="20">Other</option>
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="editExpenseAmount">
+                    Amount (¥)
+                </label>
+
+                <input
+                    type="number"
+                    id="editExpenseAmount"
+                    min="1"
+                    required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="editExpenseDescription">
+                    Description
+                </label>
+
+                <input
+                    type="text"
+                    id="editExpenseDescription"
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="editExpenseDate">
+                    Date
+                </label>
+
+                <input
+                    type="date"
+                    id="editExpenseDate"
+                    required
+                >
+
+            </div>
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="cancel-btn"
+                    onclick="closeEditModal()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="save-btn"
+                >
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+    <div id="editIncomeModal" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <h2>Edit Income</h2>
+
+            <button
+                type="button"
+                class="close-btn"
+                onclick="closeIncomeModal()"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <form id="editIncomeForm">
+
+            <div class="form-group">
+
+                <label for="editIncomeCategory">
+                    Income Type
+                </label>
+
+                <select
+                    id="editIncomeCategory"
+                    required
+                >
+                    <option value="">Select income type</option>
+                    <option value="1">Salary</option>
+                    <option value="2">Part-time Job</option>
+                    <option value="3">Bonus</option>
+                    <option value="4">Other Income</option>
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="editIncomeAmount">
+                    Amount (¥)
+                </label>
+
+                <input
+                    type="number"
+                    id="editIncomeAmount"
+                    min="1"
+                    required
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="editIncomeDescription">
+                    Description
+                </label>
+
+                <input
+                    type="text"
+                    id="editIncomeDescription"
+                >
+
+            </div>
+
+            <div class="form-group">
+
+                <label for="editIncomeDate">
+                    Date
+                </label>
+
+                <input
+                    type="date"
+                    id="editIncomeDate"
+                    required
+                >
+
+            </div>
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="cancel-btn"
+                    onclick="closeIncomeModal()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="save-btn"
+                >
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+</div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+    
+
+</body>
+
+</html>
