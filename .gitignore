@@ -1,0 +1,3 @@
+.env
+node_modules/
+moneywise_schema.sql
