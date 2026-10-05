@@ -1,3 +1,6 @@
 .env
 node_modules/
 moneywise_schema.sql
+cookies.txt
+categories_data.sql
+set
