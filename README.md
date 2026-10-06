@@ -2,62 +2,100 @@
 
 MoneyWise は、毎月の収入と支出を記録し、月ごとの収支を分かりやすく確認できる家計管理 Web アプリケーションです。
 
+ユーザー登録・ログイン機能を備えており、ログインしたユーザーごとに収入・支出データを管理できます。
+
+---
+
+## Demo
+
+Live Demo:  
+https://moneywise-1.onrender.com
+
+GitHub:  
+https://github.com/Keii-boy/Moneywise
+
+---
+
 ## 開発目的
 
-学校で学んだ Web 開発、データベース、API の知識を実際のアプリケーションとして形にするため、個人開発として制作しています。
+学校で学んだ Web 開発、データベース、API の知識を、実際に動作する Web アプリケーションとして形にすることを目的に個人開発しました。
 
-フロントエンドだけでなく、バックエンド API、MySQL との連携、月別データの集計まで一連の処理を自分で実装し、Web アプリケーション全体の仕組みを理解することを目標にしています。
+フロントエンドだけでなく、バックエンド API、MySQL、認証、セッション管理、クラウド環境へのデプロイまで実装し、Web アプリケーション全体の仕組みを理解することを目標にしています。
+
+---
 
 ## 主な機能
 
+- ユーザー登録
+- ログイン / ログアウト
+- セッション認証
+- ユーザーごとのデータ管理
 - 収入の登録・表示・編集・削除
 - 支出の登録・表示・編集・削除
 - 月ごとの収入・支出・残高表示
 - 月切り替え
 - 支出のカテゴリ別集計
 - 収入と支出のグラフ表示
-- データベースとの連携
-- REST API を利用したフロントエンド／バックエンド連携
+- MySQL データベースとの連携
+- REST API を利用したフロントエンド / バックエンド連携
+
+---
 
 ## 使用技術
 
 ### Frontend
+
 - HTML
 - CSS
 - JavaScript
 - Chart.js
 
 ### Backend
+
 - Node.js
 - Express
+- bcrypt
+- express-session
+- express-mysql-session
 
 ### Database
+
 - MySQL
 - mysql2
+- Aiven for MySQL
 
-### その他
-- Git / GitHub
+### Deployment
+
+- Render
+
+### Development Tools
+
+- Git
+- GitHub
+- VS Code
 - dotenv
-- CORS
+
+---
 
 ## システム構成
 
-```
+```text
 Browser
-  |
-  | HTTP / JSON
-  v
+   |
+   | HTTP / JSON
+   v
 Frontend
 HTML / CSS / JavaScript
-  |
-  | REST API
-  v
+   |
+   | REST API
+   v
 Node.js / Express
-  |
-  | SQL
-  v
-MySQL
-```
+   |
+   | Session Authentication
+   |
+   | SQL
+   v
+Aiven MySQL
 
 フロントエンドから Express で作成した API を呼び出し、MySQL に保存されている収入・支出データを取得・更新しています。
 
