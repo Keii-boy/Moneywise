@@ -630,231 +630,218 @@
 
     </main>
 
-    <div id="editModal" class="modal">
+<div id="editModal" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h2>Edit Expense</h2>
+
+            <button
+                type="button"
+                class="close-btn"
+                onclick="closeEditModal()"
+            >
+                ×
+            </button>
+        </div>
+
+        <form id="editExpenseForm">
+
+            <div class="form-group">
+                <label for="editExpenseCategory">
+                    Category
+                </label>
+
+                <select
+                    id="editExpenseCategory"
+                    required
+                >
+                    <option value="">Select category</option>
+                    <option value="5">Food</option>
+                    <option value="6">Drink</option>
+                    <option value="7">Cigarette</option>
+                    <option value="8">Alcohol</option>
+                    <option value="9">Transportation</option>
+                    <option value="10">Shopping</option>
+                    <option value="11">Entertainment</option>
+                    <option value="12">Healthcare</option>
+                    <option value="13">Rent</option>
+                    <option value="14">Electricity</option>
+                    <option value="15">Water</option>
+                    <option value="16">Phone</option>
+                    <option value="17">Insurance</option>
+                    <option value="18">Tax</option>
+                    <option value="19">Groceries</option>
+                    <option value="20">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="editExpenseAmount">
+                    Amount (¥)
+                </label>
+
+                <input
+                    type="number"
+                    id="editExpenseAmount"
+                    min="1"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="editExpenseDescription">
+                    Description
+                </label>
+
+                <input
+                    type="text"
+                    id="editExpenseDescription"
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="editExpenseDate">
+                    Date
+                </label>
+
+                <input
+                    type="date"
+                    id="editExpenseDate"
+                    required
+                >
+            </div>
+
+            <div class="modal-actions">
+                <button
+                    type="button"
+                    class="cancel-btn"
+                    onclick="closeEditModal()"
+                >
+                    Cancel
+                </button>
+
+                <button
+                    type="submit"
+                    class="save-btn"
+                >
+                    Save Changes
+                </button>
+            </div>
+
+        </form>
 
+    </div>
 
+</div>
 
-    <div class="modal-content">
 
+<div id="editIncomeModal" class="modal">
 
+    <div class="modal-content">
 
-        <div class="modal-header">
+        <div class="modal-header">
 
-            <h2>Edit Expense</h2>
+            <h2>Edit Income</h2>
 
+            <button
+                type="button"
+                class="close-btn"
+                onclick="closeIncomeModal()"
+            >
+                ×
+            </button>
 
+        </div>
 
-            <button
+        <form id="editIncomeForm">
 
-                type="button"
+            <div class="form-group">
 
-                class="close-btn"
+                <label for="editIncomeCategory">
+                    Income Type
+                </label>
 
-                onclick="closeEditModal()"
+                <select
+                    id="editIncomeCategory"
+                    required
+                >
+                    <option value="">Select income type</option>
+                    <option value="1">Salary</option>
+                    <option value="2">Part-time Job</option>
+                    <option value="3">Bonus</option>
+                    <option value="4">Other Income</option>
+                </select>
 
-            >
+            </div>
 
-                ×
+            <div class="form-group">
 
-            </button>
+                <label for="editIncomeAmount">
+                    Amount (¥)
+                </label>
 
-        </div>
+                <input
+                    type="number"
+                    id="editIncomeAmount"
+                    min="1"
+                    required
+                >
 
+            </div>
 
+            <div class="form-group">
 
-        <form id="editExpenseForm">
+                <label for="editIncomeDescription">
+                    Description
+                </label>
 
+                <input
+                    type="text"
+                    id="editIncomeDescription"
+                >
 
+            </div>
 
-            <div class="form-group">
+            <div class="form-group">
 
+                <label for="editIncomeDate">
+                    Date
+                </label>
 
+                <input
+                    type="date"
+                    id="editIncomeDate"
+                    required
+                >
 
-                <label for="editExpenseCategory">
+            </div>
 
-                    Category
+            <div class="modal-actions">
 
-                </label>
+                <button
+                    type="button"
+                    class="cancel-btn"
+                    onclick="closeIncomeModal()"
+                >
+                    Cancel
+                </button>
 
+                <button
+                    type="submit"
+                    class="save-btn"
+                >
+                    Save Changes
+                </button>
 
+            </div>
 
-                <select
+        </form>
 
-                    id="editExpenseCategory"
+    </div>
 
-                    required
-
-                >
-
-                    <option value="">Select category</option>
-
-                    <option value="5">Food</option>
-
-                    <option value="6">Drink</option>
-
-                    <option value="7">Cigarette</option>
-
-                    <option value="8">Alcohol</option>
-
-                    <option value="9">Transportation</option>
-
-                    <option value="10">Shopping</option>
-
-                    <option value="11">Entertainment</option>
-
-                    <option value="12">Healthcare</option>
-
-                    <option value="13">Rent</option>
-
-                    <option value="14">Electricity</option>
-
-                    <option value="15">Water</option>
-
-                    <option value="16">Phone</option>
-
-                    <option value="17">Insurance</option>
-
-                    <option value="18">Tax</option>
-
-                    <option value="19">Groceries</option>
-
-                    <option value="20">Other</option>
-
-                </select>
-
-
-
-            </div>
-
-
-
-            <div class="form-group">
-
-
-
-                <label for="editExpenseAmount">
-
-                    Amount (¥)
-
-                </label>
-
-
-
-                <input
-
-                    type="number"
-
-                    id="editExpenseAmount"
-
-                    min="1"
-
-                    required
-
-                >
-
-
-
-            </div>
-
-
-
-            <div class="form-group">
-
-
-
-                <label for="editExpenseDescription">
-
-                    Description
-
-                </label>
-
-
-
-                <input
-
-                    type="text"
-
-                    id="editExpenseDescription"
-
-                >
-
-
-
-            </div>
-
-
-
-            <div class="form-group">
-
-
-
-                <label for="editExpenseDate">
-
-                    Date
-
-                </label>
-
-
-
-                <input
-
-                    type="date"
-
-                    id="editExpenseDate"
-
-                    required
-
-                >
-
-
-
-            </div>
-
-
-
-            <div class="modal-actions">
-
-
-
-                <button
-
-                    type="button"
-
-                    class="cancel-btn"
-
-                    onclick="closeEditModal()"
-
-                >
-
-                    Cancel
-
-                </button>
-
-
-
-                <button
-
-                    type="submit"
-
-                    class="save-btn"
-
-                >
-
-                    Save Changes
-
-                </button>
-
-
-
-            </div>
-
-
-
-        </form>
-
-
-
-    </div>
+</div>
 
     <div id="editIncomeModal" class="modal">
 
