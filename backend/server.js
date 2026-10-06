@@ -8,6 +8,7 @@ const session = require("express-session");
 const MySQLStore = require("express-mysql-session")(session);
 
 const app = express();
+app.set("trust proxy", 1);
 const PORT = process.env.PORT || 3000;
 
 
@@ -43,7 +44,7 @@ app.use(
 
             // localhost မှာ HTTP သုံးနေလို့ false
             // production HTTPS အတွက် နောက်မှပြောင်းမယ်
-            secure: false,
+            secure: process.env.NODE_ENV === "production",
 
             sameSite: "lax",
 
