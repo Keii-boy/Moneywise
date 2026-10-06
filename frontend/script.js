@@ -1,19 +1,188 @@
-async function loadDashboard() {
+// ======================================================
+// AUTH ELEMENTS
+// ======================================================
+
+const authSection = document.getElementById("authSection");
+const appSection = document.getElementById("appSection");
+
+const loginForm = document.getElementById("loginForm");
+const registerForm = document.getElementById("registerForm");
+
+const loginMessage = document.getElementById("loginMessage");
+const registerMessage = document.getElementById("registerMessage");
+
+
+// ======================================================
+// DATE / MONTH STATE
+// ======================================================
+
+const today = new Date();
+
+let selectedYear = today.getFullYear();
+let selectedMonth = today.getMonth() + 1;
+
+
+// ======================================================
+// CHECK AUTH
+// ======================================================
+
+async function checkAuth() {
+    try {
+        const response = await fetch("/api/me");
+
+        const data = await response.json();
+
+        if (data.success) {
+            authSection.style.display = "none";
+            appSection.style.display = "block";
+
+            await loadDashboard();
+            await loadIncome();
+            await loadExpenses();
+            await loadExpenseBreakdown();
+            await loadIncomeExpenseChart();
+
+        } else {
+            authSection.style.display = "block";
+            appSection.style.display = "none";
+        }
+
+    } catch (error) {
+        console.error("Auth check error:", error);
+
+        authSection.style.display = "block";
+        appSection.style.display = "none";
+    }
+}
+
+
+// ======================================================
+// LOGIN
+// ======================================================
+
+loginForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const email =
+        document.getElementById("loginEmail").value;
+
+    const password =
+        document.getElementById("loginPassword").value;
 
     try {
+        const response = await fetch("/api/login", {
+            method: "POST",
 
-        const response =
-            await fetch(
-                `/api/dashboard/1?year=${selectedYear}&month=${selectedMonth}`
-            );
+            headers: {
+                "Content-Type": "application/json"
+            },
 
-        const data =
-            await response.json();
+            body: JSON.stringify({
+                email,
+                password
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            loginMessage.textContent =
+                "Login successful!";
+
+            authSection.style.display = "none";
+            appSection.style.display = "block";
+
+            loginForm.reset();
+
+            await loadDashboard();
+            await loadIncome();
+            await loadExpenses();
+            await loadExpenseBreakdown();
+            await loadIncomeExpenseChart();
+
+        } else {
+            loginMessage.textContent =
+                data.message || "Login failed.";
+        }
+
+    } catch (error) {
+        console.error("Login error:", error);
+
+        loginMessage.textContent =
+            "Server error.";
+    }
+});
+
+
+// ======================================================
+// REGISTER
+// ======================================================
+
+registerForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const name =
+        document.getElementById("registerName").value;
+
+    const email =
+        document.getElementById("registerEmail").value;
+
+    const password =
+        document.getElementById("registerPassword").value;
+
+    try {
+        const response = await fetch("/api/register", {
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                name,
+                email,
+                password
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            registerMessage.textContent =
+                "Registration successful! Please login.";
+
+            registerForm.reset();
+
+        } else {
+            registerMessage.textContent =
+                data.message || "Registration failed.";
+        }
+
+    } catch (error) {
+        console.error("Register error:", error);
+
+        registerMessage.textContent =
+            "Server error.";
+    }
+});
+
+
+// ======================================================
+// DASHBOARD
+// ======================================================
+
+async function loadDashboard() {
+    try {
+        const response = await fetch(
+            `/api/dashboard/me?year=${selectedYear}&month=${selectedMonth}`
+        );
+
+        const data = await response.json();
 
         if (!data.success) {
-
             console.error(
-                "Failed to load dashboard"
+                "Failed to load dashboard:",
+                data.message
             );
 
             return;
@@ -22,38 +191,33 @@ async function loadDashboard() {
         const dashboard = data.data;
 
         document.getElementById("income").textContent =
-            `¥${dashboard.totalIncome.toLocaleString()}`;
+            `¥${Number(dashboard.totalIncome).toLocaleString()}`;
 
         document.getElementById("expenses").textContent =
-            `¥${dashboard.totalExpenses.toLocaleString()}`;
+            `¥${Number(dashboard.totalExpenses).toLocaleString()}`;
 
         document.getElementById("remaining").textContent =
-            `¥${dashboard.remaining.toLocaleString()}`;
+            `¥${Number(dashboard.remaining).toLocaleString()}`;
 
         updateMonthTitle();
 
     } catch (error) {
-
         console.error(
             "Dashboard error:",
             error
         );
-
     }
 }
-const today = new Date();
 
-let selectedYear =
-    today.getFullYear();
 
-let selectedMonth =
-    today.getMonth() + 1;
+// ======================================================
+// ADD INCOME
+// ======================================================
 
-loadDashboard();
-const incomeForm = document.getElementById("incomeForm");
+const incomeForm =
+    document.getElementById("incomeForm");
 
 incomeForm.addEventListener("submit", async (event) => {
-
     event.preventDefault();
 
     const categoryId =
@@ -69,15 +233,13 @@ incomeForm.addEventListener("submit", async (event) => {
         document.getElementById("incomeDate").value;
 
     const incomeData = {
-        user_id: 1,
         category_id: Number(categoryId),
         amount: Number(amount),
-        description: description,
+        description,
         income_date: incomeDate
     };
 
     try {
-
         const response = await fetch("/api/income", {
             method: "POST",
 
@@ -94,39 +256,41 @@ incomeForm.addEventListener("submit", async (event) => {
             document.getElementById("incomeMessage");
 
         if (data.success) {
-
             message.textContent =
                 "Income added successfully!";
 
             incomeForm.reset();
+
             await loadDashboard();
+            await loadIncome();
+            await loadIncomeExpenseChart();
 
-    await loadIncome();
-
-    showNotification(
-        `💰 ${getCurrentMonthName()} income updated!`
-    );
+            showNotification(
+                `💰 ${getCurrentMonthName()} income updated!`
+            );
 
         } else {
-
             message.textContent =
-                "Failed to add income.";
-
+                data.message || "Failed to add income.";
         }
 
     } catch (error) {
-
-        console.error(error);
+        console.error("Add income error:", error);
 
         document.getElementById("incomeMessage")
             .textContent = "Server error.";
-
     }
 });
-const expenseForm = document.getElementById("expenseForm");
+
+
+// ======================================================
+// ADD EXPENSE
+// ======================================================
+
+const expenseForm =
+    document.getElementById("expenseForm");
 
 expenseForm.addEventListener("submit", async (event) => {
-
     event.preventDefault();
 
     const categoryId =
@@ -142,22 +306,14 @@ expenseForm.addEventListener("submit", async (event) => {
         document.getElementById("expenseDate").value;
 
     const expenseData = {
-
-        user_id: 1,
-
         category_id: Number(categoryId),
-
         amount: Number(amount),
-
-        description: description,
-
+        description,
         expense_date: expenseDate
     };
 
     try {
-
         const response = await fetch("/api/expenses", {
-
             method: "POST",
 
             headers: {
@@ -173,32 +329,38 @@ expenseForm.addEventListener("submit", async (event) => {
             document.getElementById("expenseMessage");
 
         if (data.success) {
-
             message.textContent =
                 "Expense added successfully!";
 
             expenseForm.reset();
 
-        } else {
+            await loadDashboard();
+            await loadExpenses();
+            await loadExpenseBreakdown();
+            await loadIncomeExpenseChart();
 
+        } else {
             message.textContent =
-                "Failed to add expense.";
+                data.message || "Failed to add expense.";
         }
 
     } catch (error) {
-
-        console.error(error);
+        console.error("Add expense error:", error);
 
         document.getElementById("expenseMessage")
             .textContent = "Server error.";
     }
 });
+
+
+// ======================================================
+// LOAD EXPENSE HISTORY
+// ======================================================
+
 async function loadExpenses() {
-
     try {
-
         const response = await fetch(
-            `/api/expenses/1?year=${selectedYear}&month=${selectedMonth}`
+            `/api/expenses/me?year=${selectedYear}&month=${selectedMonth}`
         );
 
         const data = await response.json();
@@ -209,7 +371,6 @@ async function loadExpenses() {
         history.innerHTML = "";
 
         if (!data.success) {
-
             history.innerHTML =
                 "<p>Failed to load expenses.</p>";
 
@@ -217,7 +378,6 @@ async function loadExpenses() {
         }
 
         if (data.data.length === 0) {
-
             history.innerHTML =
                 "<p>No expenses for this month.</p>";
 
@@ -225,7 +385,6 @@ async function loadExpenses() {
         }
 
         data.data.forEach((expense) => {
-
             const item =
                 document.createElement("div");
 
@@ -233,18 +392,15 @@ async function loadExpenses() {
 
             item.innerHTML = `
                 <div class="expense-info">
-
                     <h4>${expense.category}</h4>
 
                     <p>
                         ${expense.description || "No description"}
                         · ${expense.expense_date}
                     </p>
-
                 </div>
 
                 <div class="expense-actions">
-
                     <strong>
                         ¥${Number(expense.amount).toLocaleString()}
                     </strong>
@@ -262,7 +418,6 @@ async function loadExpenses() {
                     >
                         Delete
                     </button>
-
                 </div>
             `;
 
@@ -270,21 +425,22 @@ async function loadExpenses() {
         });
 
     } catch (error) {
-
         console.error(
             "Expense history error:",
             error
         );
     }
-    
 }
-    loadExpenses();
+
+
+// ======================================================
+// EXPENSE BREAKDOWN
+// ======================================================
+
 async function loadExpenseBreakdown() {
-
     try {
-
         const response = await fetch(
-            `/api/expenses/breakdown/1?year=${selectedYear}&month=${selectedMonth}`
+            `/api/expenses/breakdown/me?year=${selectedYear}&month=${selectedMonth}`
         );
 
         const data = await response.json();
@@ -295,7 +451,6 @@ async function loadExpenseBreakdown() {
         breakdown.innerHTML = "";
 
         if (!data.success) {
-
             breakdown.innerHTML =
                 "<p>Failed to load breakdown.</p>";
 
@@ -303,60 +458,58 @@ async function loadExpenseBreakdown() {
         }
 
         if (data.data.length === 0) {
-
             breakdown.innerHTML =
                 "<p>No expenses for this month.</p>";
 
             return;
         }
-        const totalExpenses = data.data.reduce(
-    (sum, item) => sum + Number(item.total),
-    0
-);
+
+        const totalExpenses =
+            data.data.reduce(
+                (sum, item) =>
+                    sum + Number(item.total),
+                0
+            );
+
         data.data.forEach((item) => {
+            const amount =
+                Number(item.total);
 
-    const amount = Number(item.total);
+            const percentage =
+                totalExpenses > 0
+                    ? (amount / totalExpenses) * 100
+                    : 0;
 
-    const percentage =
-        totalExpenses > 0
-            ? (amount / totalExpenses) * 100
-            : 0;
+            const card =
+                document.createElement("div");
 
-    const card =
-        document.createElement("div");
+            card.className = "breakdown-item";
 
-    card.className = "breakdown-item";
+            card.innerHTML = `
+                <div class="breakdown-header">
+                    <h4>${item.category}</h4>
 
-    card.innerHTML = `
-        <div class="breakdown-header">
+                    <strong>
+                        ¥${amount.toLocaleString()}
+                    </strong>
+                </div>
 
-            <h4>${item.category}</h4>
+                <div class="breakdown-bar">
+                    <div
+                        class="breakdown-progress"
+                        style="width: ${percentage}%"
+                    ></div>
+                </div>
 
-            <strong>
-                ¥${amount.toLocaleString()}
-            </strong>
+                <p>
+                    ${percentage.toFixed(1)}%
+                </p>
+            `;
 
-        </div>
-
-        <div class="breakdown-bar">
-
-            <div
-                class="breakdown-progress"
-                style="width: ${percentage}%"
-            ></div>
-
-        </div>
-
-        <p>
-            ${percentage.toFixed(1)}%
-        </p>
-    `;
-
-    breakdown.appendChild(card);
-});
+            breakdown.appendChild(card);
+        });
 
     } catch (error) {
-
         console.error(
             "Expense breakdown error:",
             error
@@ -364,61 +517,78 @@ async function loadExpenseBreakdown() {
     }
 }
 
-async function deleteExpense(id) {
 
+// ======================================================
+// DELETE EXPENSE
+// ======================================================
+
+async function deleteExpense(id) {
     const confirmed =
-        confirm("Are you sure you want to delete this expense?");
+        confirm(
+            "Are you sure you want to delete this expense?"
+        );
 
     if (!confirmed) {
         return;
     }
 
     try {
-
-        const response =
-            await fetch(`/api/expenses/${id}`, {
+        const response = await fetch(
+            `/api/expenses/${id}`,
+            {
                 method: "DELETE"
-            });
+            }
+        );
 
         const data =
             await response.json();
 
         if (data.success) {
-
             await loadExpenses();
             await loadDashboard();
+            await loadExpenseBreakdown();
+            await loadIncomeExpenseChart();
 
         } else {
-
             alert(data.message);
         }
 
     } catch (error) {
-
         console.error(error);
 
-        alert("Failed to delete expense.");
+        alert(
+            "Failed to delete expense."
+        );
     }
 }
+
+
+// ======================================================
+// EDIT EXPENSE
+// ======================================================
+
 let editingExpenseId = null;
 
 async function editExpense(id) {
-
     try {
-
         const response =
-            await fetch("/api/expenses/1");
+            await fetch("/api/expenses/me");
 
         const data =
             await response.json();
 
         if (!data.success) {
-            alert("Failed to load expense.");
+            alert(
+                "Failed to load expense."
+            );
+
             return;
         }
 
         const expense =
-            data.data.find(item => item.id === id);
+            data.data.find(
+                item => item.id === id
+            );
 
         if (!expense) {
             alert("Expense not found.");
@@ -427,121 +597,143 @@ async function editExpense(id) {
 
         editingExpenseId = id;
 
-        document.getElementById("editExpenseCategory").value =
-            getCategoryId(expense.category);
+        document.getElementById(
+            "editExpenseCategory"
+        ).value =
+            getCategoryId(
+                expense.category
+            );
 
-        document.getElementById("editExpenseAmount").value =
+        document.getElementById(
+            "editExpenseAmount"
+        ).value =
             expense.amount;
 
-        document.getElementById("editExpenseDescription").value =
+        document.getElementById(
+            "editExpenseDescription"
+        ).value =
             expense.description || "";
 
-        document.getElementById("editExpenseDate").value =
-            formatDateForInput(expense.expense_date);
+        document.getElementById(
+            "editExpenseDate"
+        ).value =
+            formatDateForInput(
+                expense.expense_date
+            );
 
-        document.getElementById("editModal").style.display =
-            "flex";
+        document.getElementById(
+            "editModal"
+        ).style.display = "flex";
 
     } catch (error) {
-
         console.error(error);
 
-        alert("Failed to load expense.");
-
+        alert(
+            "Failed to load expense."
+        );
     }
 }
+
+
+// ======================================================
+// EXPENSE CHART
+// ======================================================
+
 let incomeExpenseChart = null;
 
 async function loadIncomeExpenseChart() {
-
     try {
-
         const response = await fetch(
-            `/api/dashboard/1?year=${selectedYear}&month=${selectedMonth}`
+            `/api/dashboard/me?year=${selectedYear}&month=${selectedMonth}`
         );
 
-        const data = await response.json();
+        const data =
+            await response.json();
 
         if (!data.success) {
             return;
         }
 
-        const dashboard = data.data;
+        const dashboard =
+            data.data;
 
         const canvas =
-            document.getElementById("incomeExpenseChart");
+            document.getElementById(
+                "incomeExpenseChart"
+            );
 
-        const ctx = canvas.getContext("2d");
+        if (!canvas) {
+            return;
+        }
 
-        // Destroy previous chart
+        const ctx =
+            canvas.getContext("2d");
+
         if (incomeExpenseChart) {
             incomeExpenseChart.destroy();
         }
 
-        incomeExpenseChart = new Chart(ctx, {
+        incomeExpenseChart =
+            new Chart(ctx, {
+                type: "bar",
 
-            type: "bar",
+                data: {
+                    labels: [
+                        "Income",
+                        "Expenses"
+                    ],
 
-            data: {
+                    datasets: [{
+                        label:
+                            `${selectedYear}/${selectedMonth}`,
 
-                labels: ["Income", "Expenses"],
-
-                datasets: [{
-                    label: `${selectedYear}/${selectedMonth}`,
-
-                    data: [
-                        dashboard.totalIncome,
-                        dashboard.totalExpenses
-                    ]
-                }]
-            },
-
-            options: {
-
-                responsive: true,
-
-                plugins: {
-
-                    legend: {
-                        display: false
-                    }
-
+                        data: [
+                            dashboard.totalIncome,
+                            dashboard.totalExpenses
+                        ]
+                    }]
                 },
 
-                scales: {
+                options: {
+                    responsive: true,
 
-                    y: {
-
-                        beginAtZero: true,
-
-                        ticks: {
-
-                            callback: function(value) {
-                                return "¥" +
-                                    Number(value).toLocaleString();
-                            }
-
+                    plugins: {
+                        legend: {
+                            display: false
                         }
+                    },
 
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+
+                            ticks: {
+                                callback:
+                                    function (value) {
+                                        return "¥" +
+                                            Number(value)
+                                                .toLocaleString();
+                                    }
+                            }
+                        }
                     }
-
                 }
-
-            }
-
-        });
+            });
 
     } catch (error) {
-
         console.error(
             "Income expense chart error:",
             error
         );
-
     }
 }
-function getCategoryId(category) {
 
+
+// ======================================================
+// EXPENSE CATEGORY ID
+// ======================================================
+
+function getCategoryId(category) {
     const categories = {
         "Food": 5,
         "Drink": 6,
@@ -565,103 +757,125 @@ function getCategoryId(category) {
 }
 
 
+// ======================================================
+// DATE FORMAT
+// ======================================================
+
 function formatDateForInput(date) {
-
     return date.split("T")[0];
-
 }
 
+
+// ======================================================
+// CLOSE EXPENSE MODAL
+// ======================================================
 
 function closeEditModal() {
-
-    document.getElementById("editModal").style.display =
-        "none";
+    document.getElementById(
+        "editModal"
+    ).style.display = "none";
 
     editingExpenseId = null;
-
 }
+
+
+// ======================================================
+// UPDATE EXPENSE
+// ======================================================
+
 const editExpenseForm =
-    document.getElementById("editExpenseForm");
+    document.getElementById(
+        "editExpenseForm"
+    );
 
-editExpenseForm.addEventListener("submit", async (event) => {
+editExpenseForm.addEventListener(
+    "submit",
+    async (event) => {
+        event.preventDefault();
 
-    event.preventDefault();
-
-    if (!editingExpenseId) {
-        return;
-    }
-
-    const expenseData = {
-
-        category_id: Number(
-            document.getElementById(
-                "editExpenseCategory"
-            ).value
-        ),
-
-        amount: Number(
-            document.getElementById(
-                "editExpenseAmount"
-            ).value
-        ),
-
-        description:
-            document.getElementById(
-                "editExpenseDescription"
-            ).value,
-
-        expense_date:
-            document.getElementById(
-                "editExpenseDate"
-            ).value
-    };
-
-    try {
-
-        const response =
-            await fetch(
-                `/api/expenses/${editingExpenseId}`,
-                {
-                    method: "PUT",
-
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-
-                    body: JSON.stringify(expenseData)
-                }
-            );
-
-        const data =
-            await response.json();
-
-        if (data.success) {
-
-            closeEditModal();
-
-            await loadExpenses();
-
-            await loadDashboard();
-
-        } else {
-
-            alert(data.message);
-
+        if (!editingExpenseId) {
+            return;
         }
 
-    } catch (error) {
+        const expenseData = {
+            category_id: Number(
+                document.getElementById(
+                    "editExpenseCategory"
+                ).value
+            ),
 
-        console.error(error);
+            amount: Number(
+                document.getElementById(
+                    "editExpenseAmount"
+                ).value
+            ),
 
-        alert("Failed to update expense.");
+            description:
+                document.getElementById(
+                    "editExpenseDescription"
+                ).value,
 
+            expense_date:
+                document.getElementById(
+                    "editExpenseDate"
+                ).value
+        };
+
+        try {
+            const response =
+                await fetch(
+                    `/api/expenses/${editingExpenseId}`,
+                    {
+                        method: "PUT",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify(
+                                expenseData
+                            )
+                    }
+                );
+
+            const data =
+                await response.json();
+
+            if (data.success) {
+                closeEditModal();
+
+                await loadExpenses();
+                await loadDashboard();
+                await loadExpenseBreakdown();
+                await loadIncomeExpenseChart();
+
+            } else {
+                alert(data.message);
+            }
+
+        } catch (error) {
+            console.error(error);
+
+            alert(
+                "Failed to update expense."
+            );
+        }
     }
-});
+);
+
+
+// ======================================================
+// MONTH TITLE
+// ======================================================
+
 const monthTitle =
-    document.getElementById("monthTitle");
+    document.getElementById(
+        "monthTitle"
+    );
 
 function updateMonthTitle() {
-
     const date =
         new Date(
             selectedYear,
@@ -669,75 +883,100 @@ function updateMonthTitle() {
         );
 
     const monthName =
-        date.toLocaleString("en-US", {
-            month: "long"
-        });
+        date.toLocaleString(
+            "en-US",
+            {
+                month: "long"
+            }
+        );
 
     monthTitle.textContent =
         `${monthName} ${selectedYear}`;
 }
+
+
+// ======================================================
+// PREVIOUS MONTH
+// ======================================================
+
 document
     .getElementById("previousMonth")
-    .addEventListener("click", async () => {
+    .addEventListener(
+        "click",
+        async () => {
+            selectedMonth--;
 
-        selectedMonth--;
+            if (selectedMonth === 0) {
+                selectedMonth = 12;
+                selectedYear--;
+            }
 
-        if (selectedMonth === 0) {
+            updateMonthTitle();
 
-            selectedMonth = 12;
-            selectedYear--;
-
+            await loadDashboard();
+            await loadExpenses();
+            await loadIncome();
+            await loadExpenseBreakdown();
+            await loadIncomeExpenseChart();
         }
+    );
 
-        updateMonthTitle();
 
-        await loadDashboard();
-        await loadExpenses();
-        await loadIncome();
-        await loadExpenseBreakdown();
-        await loadIncomeExpenseChart();
+// ======================================================
+// NEXT MONTH
+// ======================================================
 
-    });
-    document
+document
     .getElementById("nextMonth")
-    .addEventListener("click", async () => {
+    .addEventListener(
+        "click",
+        async () => {
+            selectedMonth++;
 
-        selectedMonth++;
+            if (selectedMonth === 13) {
+                selectedMonth = 1;
+                selectedYear++;
+            }
 
-        if (selectedMonth === 13) {
+            updateMonthTitle();
 
-            selectedMonth = 1;
-            selectedYear++;
-
+            await loadDashboard();
+            await loadExpenses();
+            await loadIncome();
+            await loadExpenseBreakdown();
+            await loadIncomeExpenseChart();
         }
+    );
 
-        updateMonthTitle();
 
-        await loadDashboard();
-        await loadExpenses();
-        await loadIncome();
-        await loadExpenseBreakdown();
-        await loadIncomeExpenseChart();
+// ======================================================
+// LOAD INCOME HISTORY
+// ======================================================
 
-    });
-    
 async function loadIncome() {
-
     try {
-
         const response = await fetch(
-            `/api/income/1?year=${selectedYear}&month=${selectedMonth}`
+            `/api/income/me?year=${selectedYear}&month=${selectedMonth}`
         );
 
-        const data = await response.json();
+        const data =
+            await response.json();
 
         const history =
-            document.getElementById("incomeHistory");
+            document.getElementById(
+                "incomeHistory"
+            );
 
         history.innerHTML = "";
 
-        if (data.data.length === 0) {
+        if (!data.success) {
+            history.innerHTML =
+                "<p>Failed to load income.</p>";
 
+            return;
+        }
+
+        if (data.data.length === 0) {
             history.innerHTML =
                 "<p>No income for this month.</p>";
 
@@ -745,26 +984,23 @@ async function loadIncome() {
         }
 
         data.data.forEach((income) => {
-
             const item =
                 document.createElement("div");
 
-            item.className = "income-item";
+            item.className =
+                "income-item";
 
             item.innerHTML = `
                 <div class="income-info">
-
                     <h4>${income.category}</h4>
 
                     <p>
                         ${income.description || "No description"}
                         · ${income.income_date}
                     </p>
-
                 </div>
 
                 <div class="income-actions">
-
                     <strong>
                         +¥${Number(income.amount).toLocaleString()}
                     </strong>
@@ -782,7 +1018,6 @@ async function loadIncome() {
                     >
                         Delete
                     </button>
-
                 </div>
             `;
 
@@ -790,7 +1025,6 @@ async function loadIncome() {
         });
 
     } catch (error) {
-
         console.error(
             "Income history error:",
             error
@@ -798,22 +1032,25 @@ async function loadIncome() {
     }
 }
 
-loadIncome();
+
+// ======================================================
+// EDIT INCOME
+// ======================================================
+
 let editingIncomeId = null;
 
 async function editIncome(id) {
-
     try {
-
         const response =
-            await fetch("/api/income/1");
+            await fetch("/api/income/me");
 
         const data =
             await response.json();
 
         if (!data.success) {
-
-            alert("Failed to load income.");
+            alert(
+                "Failed to load income."
+            );
 
             return;
         }
@@ -824,9 +1061,7 @@ async function editIncome(id) {
             );
 
         if (!income) {
-
             alert("Income not found.");
-
             return;
         }
 
@@ -861,36 +1096,43 @@ async function editIncome(id) {
         ).style.display = "flex";
 
     } catch (error) {
-
         console.error(error);
 
-        alert("Failed to load income.");
-
+        alert(
+            "Failed to load income."
+        );
     }
 }
+
+
+// ======================================================
+// INCOME CATEGORY ID
+// ======================================================
+
 function getIncomeCategoryId(category) {
-
     const categories = {
-
         "Salary": 1,
-
         "Part-time Job": 2,
-
         "Bonus": 3,
-
         "Other Income": 4
-
     };
 
     return categories[category];
 }
+
+
+// ======================================================
+// UPDATE INCOME
+// ======================================================
+
 const editIncomeForm =
-    document.getElementById("editIncomeForm");
+    document.getElementById(
+        "editIncomeForm"
+    );
 
 editIncomeForm.addEventListener(
     "submit",
     async (event) => {
-
         event.preventDefault();
 
         if (!editingIncomeId) {
@@ -898,7 +1140,6 @@ editIncomeForm.addEventListener(
         }
 
         const incomeData = {
-
             category_id: Number(
                 document.getElementById(
                     "editIncomeCategory"
@@ -923,12 +1164,10 @@ editIncomeForm.addEventListener(
         };
 
         try {
-
             const response =
                 await fetch(
                     `/api/income/${editingIncomeId}`,
                     {
-
                         method: "PUT",
 
                         headers: {
@@ -947,40 +1186,45 @@ editIncomeForm.addEventListener(
                 await response.json();
 
             if (data.success) {
-
                 closeIncomeModal();
 
                 await loadIncome();
-
                 await loadDashboard();
+                await loadIncomeExpenseChart();
 
             } else {
-
                 alert(data.message);
-
             }
 
         } catch (error) {
-
             console.error(error);
 
-            alert("Failed to update income.");
-
+            alert(
+                "Failed to update income."
+            );
         }
-
     }
 );
-function closeIncomeModal() {
 
+
+// ======================================================
+// CLOSE INCOME MODAL
+// ======================================================
+
+function closeIncomeModal() {
     document.getElementById(
         "editIncomeModal"
     ).style.display = "none";
 
     editingIncomeId = null;
-
 }
-async function deleteIncome(id) {
 
+
+// ======================================================
+// DELETE INCOME
+// ======================================================
+
+async function deleteIncome(id) {
     const confirmed =
         confirm(
             "Are you sure you want to delete this income?"
@@ -991,7 +1235,6 @@ async function deleteIncome(id) {
     }
 
     try {
-
         const response =
             await fetch(
                 `/api/income/${id}`,
@@ -1004,44 +1247,52 @@ async function deleteIncome(id) {
             await response.json();
 
         if (data.success) {
-
             await loadIncome();
-
             await loadDashboard();
+            await loadIncomeExpenseChart();
 
         } else {
-
             alert(data.message);
-
         }
 
     } catch (error) {
-
         console.error(error);
 
         alert(
             "Failed to delete income."
         );
-
     }
 }
+
+
+// ======================================================
+// NOTIFICATION
+// ======================================================
+
 function showNotification(message) {
-
     const notification =
-        document.getElementById("notification");
+        document.getElementById(
+            "notification"
+        );
 
-    notification.textContent = message;
+    notification.textContent =
+        message;
 
-    notification.style.display = "block";
+    notification.style.display =
+        "block";
 
     setTimeout(() => {
-
-        notification.style.display = "none";
-
+        notification.style.display =
+            "none";
     }, 4000);
 }
-function getCurrentMonthName() {
 
+
+// ======================================================
+// CURRENT MONTH NAME
+// ======================================================
+
+function getCurrentMonthName() {
     const date = new Date();
 
     return date.toLocaleString(
@@ -1051,5 +1302,12 @@ function getCurrentMonthName() {
             year: "numeric"
         }
     );
-
 }
+
+
+// ======================================================
+// START
+// ======================================================
+
+updateMonthTitle();
+checkAuth();
