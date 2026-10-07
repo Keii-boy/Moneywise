@@ -7,7 +7,7 @@ const appSection = document.getElementById("appSection");
 
 const loginForm = document.getElementById("loginForm");
 const registerForm = document.getElementById("registerForm");
-
+const logoutButton = document.getElementById("logoutButton");
 const loginMessage = document.getElementById("loginMessage");
 const registerMessage = document.getElementById("registerMessage");
 
@@ -112,7 +112,28 @@ loginForm.addEventListener("submit", async (event) => {
             "Server error.";
     }
 });
+// ======================================================
+// LOGOUT
+// ======================================================
 
+logoutButton.addEventListener("click", async () => {
+    try {
+        const response = await fetch("/api/logout", {
+            method: "POST"
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            appSection.style.display = "none";
+            authSection.style.display = "block";
+
+            loginMessage.textContent = "You have been logged out.";
+        }
+    } catch (error) {
+        console.error("Logout error:", error);
+    }
+});
 
 // ======================================================
 // REGISTER
