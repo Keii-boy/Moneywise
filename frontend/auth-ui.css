@@ -1,0 +1,5 @@
+.auth-addon-actions{display:flex;flex-direction:column;align-items:center;gap:16px;margin:16px auto;max-width:360px}
+.auth-addon-stack{display:grid;gap:8px;width:100%}.auth-addon-input{box-sizing:border-box;width:100%;border:1px solid #dce5df;border-radius:10px;padding:12px;font:inherit}
+.auth-addon-button{background:#153d32;color:white;padding:12px 16px;border:0;border-radius:10px;cursor:pointer;font:inherit}.auth-addon-button:disabled{opacity:.6}
+.auth-addon-note{margin:12px auto;max-width:380px;font-size:13px;color:#285842}
+.auth-google-container{min-height:40px}.auth-token-dialog{position:fixed;z-index:99999;inset:50% auto auto 50%;transform:translate(-50%,-50%);width:min(90vw,400px);padding:25px;background:white;border:1px solid #ddd;border-radius:16px;box-shadow:0 20px 60px #0004;display:grid;gap:12px;color:#153d32}

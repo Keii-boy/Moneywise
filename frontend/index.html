@@ -1,1072 +1,1335 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
-
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-
-
-    <title>MoneyWise</title>
-
-
-
-    <link rel="stylesheet" href="style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MoneyWise</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="auth-ui.css">
 </head>
-
-
 
 <body>
 
+    <!-- =========================
+         SITE HEADER
+    ========================== -->
+    <header class="site-header">
+        <div class="brand">
+            <h1>MoneyWise</h1>
+            <p>Understand your money. Control your spending.</p>
+        </div>
+    </header>
+
+    <!-- =========================
+         AUTHENTICATION
+    ========================== -->
+    <section id="authSection" class="auth-section">
+        <div class="auth-container">
+
+            <!-- LOGIN -->
+            <div class="auth-card">
+                <h2>Login</h2>
+
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginEmail">Email</label>
+                        <input
+                            type="email"
+                            id="loginEmail"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input
+                            type="password"
+                            id="loginPassword"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit">Login</button>
+                </form>
+
+                <p id="loginMessage"></p>
+            </div>
+
+            <!-- REGISTER -->
+            <div class="auth-card">
+                <h2>Register</h2>
+
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="registerName">Name</label>
+                        <input
+                            type="text"
+                            id="registerName"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="registerEmail">Email</label>
+                        <input
+                            type="email"
+                            id="registerEmail"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="registerPassword">Password</label>
+                        <input
+                            type="password"
+                            id="registerPassword"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit">Register</button>
+                </form>
+
+                <p id="registerMessage"></p>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- =========================
+         MAIN APPLICATION
+    ========================== -->
+    <main id="appSection" style="display: none;">
+
+        <!-- DESKTOP SIDEBAR -->
+        <aside class="sidebar">
+
+            <div class="sidebar-brand">
+                <h2>MoneyWise</h2>
+            </div>
+
+            <nav class="sidebar-nav">
+
+                <button
+                    type="button"
+                    class="nav-item active"
+                    data-page="dashboard"
+                >
+                    <span class="nav-icon">⌂</span>
+                    <span>Home</span>
+                </button>
+
+                <button
+                    type="button"
+                    class="nav-item"
+                    data-page="manage"
+                >
+                    <span class="nav-icon">▦</span>
+                    <span>Manage</span>
+                </button>
+
+                <button
+                    type="button"
+                    class="nav-item"
+                    data-page="transactions"
+                >
+                    <span class="nav-icon">☷</span>
+                    <span>Transactions</span>
+                </button>
+
+                <button
+                    type="button"
+                    class="nav-item"
+                    data-page="profile"
+                >
+                    <span class="nav-icon">👤</span>
+                    <span>Profile</span>
+                </button>
+
+                <button
+                    type="button"
+                    class="nav-item"
+                    data-page="settings"
+                >
+                    <span class="nav-icon">⚙</span>
+                    <span>Settings</span>
+                </button>
+
+            </nav>
+
+        </aside>
+
+        <!-- APPLICATION CONTENT -->
+        <div class="app-content">
+
+            <!-- TOP BAR -->
+            <div class="topbar">
+
+                <div class="topbar-welcome">
+                    <p>Welcome back,</p>
+                    <h2 id="currentUserName">User</h2>
+                </div>
+
+                <button
+                    type="button"
+                    class="account-button"
+                    id="accountButton"
+                >
+                    <span
+                        class="account-avatar"
+                        id="accountAvatar"
+                    >
+                        U
+                    </span>
+
+                    <span class="account-info">
+                        <strong id="accountName">User</strong>
+                        <small id="accountEmail">
+                            user@example.com
+                        </small>
+                    </span>
+                </button>
+
+            </div>
+
+            <!-- =========================
+                 HOME PAGE
+            ========================== -->
+            <section
+                id="dashboardPage"
+                class="page-section"
+            >
+
+                <div
+                    id="notification"
+                    class="notification"
+                ></div>
+
+                <!-- FIRST-TIME WALLET SETUP -->
+                <section
+                    id="walletSetup"
+                    class="wallet-setup"
+                    hidden
+                >
+                    <h2>Set up your wallet</h2>
+
+                    <p>
+                        How much money do you currently have?
+                    </p>
+
+                    <form id="walletSetupForm">
+
+                        <label for="startingBalance">
+                            Starting Balance (JPY)
+                        </label>
+
+                        <input
+                            type="number"
+                            id="startingBalance"
+                            min="0"
+                            max="99999999.99"
+                            step="0.01"
+                            placeholder="50000"
+                            required
+                        >
+
+                        <button type="submit">
+                            Create Wallet
+                        </button>
+
+                    </form>
+
+                    <p
+                        id="walletSetupMessage"
+                        role="status"
+                    ></p>
+
+                </section>
+
+                <!-- AVAILABLE BALANCE -->
+                <section class="wallet-section">
+
+                    <div class="wallet-card">
+
+                        <p class="wallet-label">
+                            Available Balance
+                        </p>
+
+                        <h1 id="availableBalance">
+                            Loading...
+                        </h1>
+
+                        <p class="wallet-subtitle">
+                            Your current money
+                        </p>
 
+                    </div>
+
+                </section>
 
-    <header>
+            </section>
+            <!-- END HOME -->
 
-        <h1>MoneyWise</h1>
 
-        <p>Understand your money. Control your spending.</p>
+            <!-- =========================
+                 MANAGE PAGE
+            ========================== -->
+            <section
+                id="managePage"
+                class="page-section"
+                hidden
+            >
 
-    </header>
+                <h2 class="manage-title">
+                    Manage Finances
+                </h2>
 
+                <p class="manage-description">
+                    Track and manage your income and expenses
+                    effectively. Use the forms below to add
+                    new transactions and view your financial history.
+                </p>
 
+                <!-- MONTH SELECTOR -->
+                <section class="month-selector">
+
+                    <button
+                        id="previousMonth"
+                        type="button"
+                    >
+                        ←
+                    </button>
 
-    <section id="authSection" class="auth-section">
+                    <h2 id="monthTitle">
+                        August 2026
+                    </h2>
 
+                    <button
+                        id="nextMonth"
+                        type="button"
+                    >
+                        →
+                    </button>
 
+                </section>
 
-    <div class="auth-container">
+                <!-- MONTHLY SUMMARY -->
+                <section class="dashboard manage-summary">
 
+                    <div class="card summary-income">
 
+                        <span class="summary-icon">↗</span>
 
-        <div class="auth-card">
+                        <h3>Income</h3>
 
+                        <p id="income">¥0</p>
 
+                    </div>
 
-            <h2>Login</h2>
+                    <div class="card summary-expenses">
 
+                        <span class="summary-icon">↘</span>
 
+                        <h3>Expenses</h3>
 
-            <form id="loginForm">
+                        <p id="expenses">¥0</p>
 
+                    </div>
 
+                    <div class="card summary-remaining">
 
-                <div class="form-group">
+                        <h3>Monthly Remaining</h3>
 
-                    <label for="loginEmail">Email</label>
+                        <p id="remaining">¥0</p>
 
+                    </div>
 
+                </section>
 
-                    <input
+                <!-- EXPENSE BREAKDOWN -->
+                <section class="breakdown-section">
 
-                        type="email"
+                    <h2>Expense Breakdown</h2>
 
-                        id="loginEmail"
+                    <div id="expenseBreakdown">
+                        <p>Loading...</p>
+                    </div>
 
-                        required
+                </section>
 
-                    >
+                <!-- INCOME VS EXPENSES CHART -->
+                <section class="chart-section">
 
-                </div>
+                    <h2>Income vs Expenses</h2>
 
+                    <div class="chart-container">
+                        <canvas id="incomeExpenseChart"></canvas>
+                    </div>
 
+                </section>
 
-                <div class="form-group">
 
-                    <label for="loginPassword">Password</label>
+                <!-- =========================
+                     ADD TRANSACTION TABS
+                ========================== -->
+                <section class="transaction-entry">
 
+                    <h2>Add Transaction</h2>
 
+                    <!-- TABS -->
+                    <div class="entry-tabs">
 
-                    <input
+                        <button
+                            type="button"
+                            class="entry-tab active"
+                            data-entry="income"
+                        >
+                            Income
+                        </button>
 
-                        type="password"
+                        <button
+                            type="button"
+                            class="entry-tab"
+                            data-entry="expense"
+                        >
+                            Expense
+                        </button>
 
-                        id="loginPassword"
+                    </div>
 
-                        required
 
-                    >
+                    <!-- =========================
+                         INCOME TAB
+                    ========================== -->
+                    <div id="incomeEntry">
 
-                </div>
+                        <section class="form-section">
 
+                            <h2>Add Income</h2>
 
+                            <form id="incomeForm">
 
-                <button type="submit">
+                                <div class="form-group">
 
-                    Login
+                                    <label for="incomeCategory">
+                                        Income Type
+                                    </label>
 
-                </button>
+                                    <select
+                                        id="incomeCategory"
+                                        required
+                                    >
+                                        <option value="">
+                                            Select income type
+                                        </option>
 
+                                        <option value="1">Salary</option>
+                                        <option value="2">Part-time Job</option>
+                                        <option value="3">Bonus</option>
+                                        <option value="4">Other Income</option>
+                                    </select>
 
+                                </div>
 
-            </form>
+                                <div class="form-group">
 
+                                    <label for="incomeAmount">
+                                        Amount (¥)
+                                    </label>
 
+                                    <input
+                                        type="number"
+                                        id="incomeAmount"
+                                        min="1"
+                                        placeholder="230000"
+                                        required
+                                    >
 
-            <p id="loginMessage"></p>
+                                </div>
 
+                                <div class="form-group">
 
+                                    <label for="incomeDescription">
+                                        Description
+                                    </label>
 
-        </div>
+                                    <input
+                                        type="text"
+                                        id="incomeDescription"
+                                        placeholder="Monthly Salary"
+                                    >
 
+                                </div>
 
+                                <div class="form-group">
 
+                                    <label for="incomeDate">
+                                        Date
+                                    </label>
 
+                                    <input
+                                        type="date"
+                                        id="incomeDate"
+                                        required
+                                    >
 
-        <div class="auth-card">
+                                </div>
 
+                                <button type="submit">
+                                    Add Income
+                                </button>
 
+                            </form>
 
-            <h2>Register</h2>
+                            <p id="incomeMessage"></p>
 
+                        </section>
 
+                    </div>
 
-            <form id="registerForm">
 
+                    <!-- =========================
+                         EXPENSE TAB
+                    ========================== -->
+                    <div id="expenseEntry" hidden>
 
+                        <section class="form-section">
 
-                <div class="form-group">
+                            <h2>Add Expense</h2>
 
-                    <label for="registerName">Name</label>
+                            <form id="expenseForm">
 
+                                <div class="form-group">
 
+                                    <label for="expenseCategory">
+                                        Category
+                                    </label>
 
-                    <input
+                                    <select
+                                        id="expenseCategory"
+                                        required
+                                    >
+                                        <option value="">
+                                            Select category
+                                        </option>
 
-                        type="text"
+                                        <option value="5">Food</option>
+                                        <option value="6">Drink</option>
+                                        <option value="7">Cigarette</option>
+                                        <option value="8">Alcohol</option>
+                                        <option value="9">Transportation</option>
+                                        <option value="10">Shopping</option>
+                                        <option value="11">Entertainment</option>
+                                        <option value="12">Healthcare</option>
+                                        <option value="13">Rent</option>
+                                        <option value="14">Electricity</option>
+                                        <option value="15">Water</option>
+                                        <option value="16">Phone</option>
+                                        <option value="17">Insurance</option>
+                                        <option value="18">Tax</option>
+                                        <option value="19">Groceries</option>
+                                        <option value="20">Other</option>
+                                    </select>
 
-                        id="registerName"
+                                </div>
 
-                        required
+                                <div class="form-group">
 
-                    >
+                                    <label for="expenseAmount">
+                                        Amount (¥)
+                                    </label>
 
-                </div>
+                                    <input
+                                        type="number"
+                                        id="expenseAmount"
+                                        min="1"
+                                        placeholder="850"
+                                        required
+                                    >
 
+                                </div>
 
+                                <div class="form-group">
 
-                <div class="form-group">
+                                    <label for="expenseDescription">
+                                        Description
+                                    </label>
 
-                    <label for="registerEmail">Email</label>
+                                    <input
+                                        type="text"
+                                        id="expenseDescription"
+                                        placeholder="Lunch"
+                                    >
 
+                                </div>
 
+                                <div class="form-group">
 
-                    <input
+                                    <label for="expenseDate">
+                                        Date
+                                    </label>
 
-                        type="email"
+                                    <input
+                                        type="date"
+                                        id="expenseDate"
+                                        required
+                                    >
 
-                        id="registerEmail"
+                                </div>
 
-                        required
+                                <button type="submit">
+                                    Add Expense
+                                </button>
 
-                    >
+                            </form>
 
-                </div>
+                            <p id="expenseMessage"></p>
 
+                        </section>
 
+                    </div>
 
-                <div class="form-group">
+                </section>
+                <!-- END TRANSACTION ENTRY -->
 
-                    <label for="registerPassword">Password</label>
 
+                <!-- INCOME HISTORY -->
+                <section class="history-section">
 
+                    <h2>Income History</h2>
 
-                    <input
+                    <div id="incomeHistory"></div>
 
-                        type="password"
+                </section>
 
-                        id="registerPassword"
 
-                        required
+                <!-- EXPENSE HISTORY -->
+                <section class="history-section">
 
-                    >
+                    <h2>Expense History</h2>
 
-                </div>
+                    <div id="expenseHistory"></div>
 
+                </section>
 
+            </section>
+            <!-- END MANAGE PAGE -->
 
-                <button type="submit">
+<!-- ============================
+     TRANSACTIONS PAGE
+============================= -->
 
-                    Register
+<section id="transactionsPage" class="page-section" hidden>
 
-                </button>
+    <div class="transactions-header">
+        <h2>Transactions</h2>
+        <p>Explore your complete financial history.</p>
+    </div>
 
+    <div class="transactions-panel">
 
+        <!-- SEARCH -->
+        <div class="transactions-search-wrapper">
+            <label for="transactionSearch">Search transactions</label>
 
-            </form>
+            <input
+                type="search"
+                id="transactionSearch"
+                class="transaction-search"
+                placeholder="Search category, description or date..."
+            >
+        </div>
 
+        <!-- TYPE FILTER -->
+        <div class="transaction-filters" role="group"
+             aria-label="Transaction type">
 
+            <button type="button"
+                    class="transaction-filter active"
+                    data-filter="all"
+                    aria-pressed="true">
+                All
+            </button>
 
-            <p id="registerMessage"></p>
+            <button type="button"
+                    class="transaction-filter"
+                    data-filter="income"
+                    aria-pressed="false">
+                Income
+            </button>
 
+            <button type="button"
+                    class="transaction-filter"
+                    data-filter="expense"
+                    aria-pressed="false">
+                Expenses
+            </button>
 
+        </div>
 
-        </div>
+        <!-- DATE RANGE -->
+        <div class="transaction-date-filter">
 
+            <div class="date-field">
+                <label for="transactionFromDate">From</label>
+                <input type="date" id="transactionFromDate">
+            </div>
 
+            <div class="date-field">
+                <label for="transactionToDate">To</label>
+                <input type="date" id="transactionToDate">
+            </div>
 
-    </div>
+            <button type="button"
+                    id="clearTransactionFilters"
+                    class="clear-filter-btn">
+                Clear Filters
+            </button>
 
+        </div>
 
+        <!-- RESULTS -->
+        <div class="transactions-results-header">
+            <h3>Transaction History</h3>
+
+            <span id="transactionCount">
+                0 transactions
+            </span>
+        </div>
+
+        <div id="transactionsList"></div>
+
+    </div>
 
 </section>
 
-    <main id="appSection" style="display: none;">
-    <button id="logoutButton" class="logout-button">Logout</button>
-        <div id="notification" class="notification"></div>
+<!-- ===================================
+     PROFILE PAGE
+==================================== -->
 
+<section id="profilePage" class="page-section" hidden>
 
+    <div class="mw-profile-page">
 
-        <section class="month-selector">
+        <header class="mw-profile-header">
+            <h2>Profile</h2>
+        </header>
 
+        <!-- USER CARD -->
+        <div class="mw-user-card">
 
+            <div class="mw-profile-avatar" id="profileAvatar">
+                U
+            </div>
 
-    <button
+            <div class="mw-user-details">
+                <h3 id="profileName">User</h3>
+                <p id="profileEmail">user@example.com</p>
+            </div>
 
-        id="previousMonth"
+        </div>
 
-        type="button"
+        <!-- ACCOUNT -->
+        <div class="mw-settings-label">Account</div>
 
-    >
-
-        ←
-
-    </button>
-
-
-
-    <h2 id="monthTitle">
-
-        August 2026
-
-    </h2>
-
-
-
-    <button
-
-        id="nextMonth"
-
-        type="button"
-
-    >
-
-        →
-
-    </button>
-
-
-
-</section>
-
-        <section class="dashboard">
-
-
-
-            <div class="card">
-
-                <h3>Income</h3>
-
-                <p id="income">¥0</p>
-
-            </div>
-
-
-
-            <div class="card">
-
-                <h3>Expenses</h3>
-
-                <p id="expenses">¥0</p>
-
-            </div>
-
-
-
-            <div class="card">
-
-                <h3>Remaining</h3>
-
-                <p id="remaining">¥0</p>
-
-            </div>
-
-
-
-        </section>
-
-        <section class="breakdown-section">
-
-
-
-    <h2>Expense Breakdown</h2>
-
-
-
-    <div id="expenseBreakdown">
-
-        <p>Loading...</p>
-
-    </div>
-
-
-
-</section>
-
-
-
-        <section class="chart-section">
-
-
-
-    <h2>Income vs Expenses</h2>
-
-
-
-    <div class="chart-container">
-
-        <canvas id="incomeExpenseChart"></canvas>
-
-    </div>
-
-
-
-</section>
-
-        <section class="form-section">
-
-
-
-    <h2>Add Income</h2>
-
-
-
-    <form id="incomeForm">
-
-
-
-        <div class="form-group">
-
-            <label for="incomeCategory">Income Type</label>
-
-
-
-            <select id="incomeCategory" required>
-
-                <option value="">Select income type</option>
-
-                <option value="1">Salary</option>
-
-                <option value="2">Part-time Job</option>
-
-                <option value="3">Bonus</option>
-
-                <option value="4">Other Income</option>
-
-            </select>
-
-        </div>
-
-
-
-        <div class="form-group">
-
-            <label for="incomeAmount">Amount (¥)</label>
-
-
-
-            <input
-
-                type="number"
-
-                id="incomeAmount"
-
-                min="1"
-
-                placeholder="230000"
-
-                required
-
-            >
-
-        </div>
-
-
-
-        <div class="form-group">
-
-            <label for="incomeDescription">Description</label>
-
-
-
-            <input
-
-                type="text"
-
-                id="incomeDescription"
-
-                placeholder="August Salary"
-
-            >
-
-        </div>
-
-
-
-        <div class="form-group">
-
-            <label for="incomeDate">Date</label>
-
-
-
-            <input
-
-                type="date"
-
-                id="incomeDate"
-
-                required
-
-            >
-
-        </div>
-
-
-
-        <button type="submit">
-
-            Add Income
-
-        </button>
-
-
-
-    </form>
-
-
-
-    <p id="incomeMessage"></p>
-
-
-
-</section>
-
-<section class="form-section">
-
-
-
-    <h2>Add Expense</h2>
-
-
-
-    <form id="expenseForm">
-
-
-
-        <div class="form-group">
-
-            <label for="expenseCategory">Category</label>
-
-
-
-            <select id="expenseCategory" required>
-
-                <option value="">Select category</option>
-
-                <option value="5">Food</option>
-
-                <option value="6">Drink</option>
-
-                <option value="7">Cigarette</option>
-
-                <option value="8">Alcohol</option>
-
-                <option value="9">Transportation</option>
-
-                <option value="10">Shopping</option>
-
-                <option value="11">Entertainment</option>
-
-                <option value="12">Healthcare</option>
-
-                <option value="13">Rent</option>
-
-                <option value="14">Electricity</option>
-
-                <option value="15">Water</option>
-
-                <option value="16">Phone</option>
-
-                <option value="17">Insurance</option>
-
-                <option value="18">Tax</option>
-
-                <option value="19">Groceries</option>
-
-                <option value="20">Other</option>
-
-            </select>
-
-        </div>
-
-
-
-        <div class="form-group">
-
-            <label for="expenseAmount">Amount (¥)</label>
-
-
-
-            <input
-
-                type="number"
-
-                id="expenseAmount"
-
-                min="1"
-
-                placeholder="850"
-
-                required
-
-            >
-
-        </div>
-
-
-
-        <div class="form-group">
-
-            <label for="expenseDescription">Description</label>
-
-
-
-            <input
-
-                type="text"
-
-                id="expenseDescription"
-
-                placeholder="Lunch"
-
-            >
-
-        </div>
-
-
-
-        <div class="form-group">
-
-            <label for="expenseDate">Date</label>
-
-
-
-            <input
-
-                type="date"
-
-                id="expenseDate"
-
-                required
-
-            >
-
-        </div>
-
-
-
-        <button type="submit">
-
-            Add Expense
-
-        </button>
-
-
-
-    </form>
-
-
-
-    <p id="expenseMessage"></p>
-
-
-
-</section>
-
-<section class="history-section">
-
-
-
-    <h2>Income History</h2>
-
-
-
-    <div id="incomeHistory"></div>
-
-
-
-</section>
-
-<section class="history-section">
-
-
-
-    <h2>Expense History</h2>
-
-
-
-    <div id="expenseHistory"></div>
-
-
-
-</section>
-
-
-
-    </main>
-
-<div id="editModal" class="modal">
-
-    <div class="modal-content">
-
-        <div class="modal-header">
-            <h2>Edit Expense</h2>
+        <div class="mw-settings-card">
 
             <button
                 type="button"
-                class="close-btn"
-                onclick="closeEditModal()"
+                class="mw-settings-row"
+                data-settings-target="manageProfilePanel"
             >
-                ×
+                <span class="mw-row-icon">♙</span>
+                <span class="mw-row-title">Manage Profile</span>
+                <span class="mw-row-arrow">›</span>
             </button>
+
+            <button
+                type="button"
+                class="mw-settings-row"
+                data-settings-target="securityPanel"
+            >
+                <span class="mw-row-icon">♙</span>
+                <span class="mw-row-title">Password & Security</span>
+                <span class="mw-row-arrow">›</span>
+            </button>
+
+            <button
+                type="button"
+                class="mw-settings-row"
+                data-settings-target="notificationsPanel"
+            >
+                <span class="mw-row-icon">♧</span>
+                <span class="mw-row-title">Notifications</span>
+                <span class="mw-row-arrow">›</span>
+            </button>
+
+            <button
+                type="button"
+                class="mw-settings-row"
+                data-settings-target="languagePanel"
+            >
+                <span class="mw-row-icon">◎</span>
+                <span class="mw-row-title">Language</span>
+
+                <span class="mw-row-value" id="languagePreview">
+                    English
+                </span>
+
+                <span class="mw-row-arrow">›</span>
+            </button>
+
         </div>
 
-        <form id="editExpenseForm">
+        <!-- PREFERENCES -->
+        <div class="mw-settings-label">Preferences</div>
 
-            <div class="form-group">
-                <label for="editExpenseCategory">
-                    Category
-                </label>
+        <div class="mw-settings-card">
 
-                <select
-                    id="editExpenseCategory"
-                    required
-                >
-                    <option value="">Select category</option>
-                    <option value="5">Food</option>
-                    <option value="6">Drink</option>
-                    <option value="7">Cigarette</option>
-                    <option value="8">Alcohol</option>
-                    <option value="9">Transportation</option>
-                    <option value="10">Shopping</option>
-                    <option value="11">Entertainment</option>
-                    <option value="12">Healthcare</option>
-                    <option value="13">Rent</option>
-                    <option value="14">Electricity</option>
-                    <option value="15">Water</option>
-                    <option value="16">Phone</option>
-                    <option value="17">Insurance</option>
-                    <option value="18">Tax</option>
-                    <option value="19">Groceries</option>
-                    <option value="20">Other</option>
-                </select>
-            </div>
+            <button
+                type="button"
+                class="mw-settings-row"
+                data-settings-target="aboutPanel"
+            >
+                <span class="mw-row-icon">▤</span>
+                <span class="mw-row-title">About MoneyWise</span>
+                <span class="mw-row-arrow">›</span>
+            </button>
 
-            <div class="form-group">
-                <label for="editExpenseAmount">
-                    Amount (¥)
-                </label>
+            <button
+                type="button"
+                class="mw-settings-row"
+                data-settings-target="themePanel"
+            >
+                <span class="mw-row-icon">◐</span>
+                <span class="mw-row-title">Theme</span>
 
-                <input
-                    type="number"
-                    id="editExpenseAmount"
-                    min="1"
-                    required
-                >
-            </div>
+                <span class="mw-row-value" id="themePreview">
+                    Light
+                </span>
 
-            <div class="form-group">
-                <label for="editExpenseDescription">
-                    Description
+                <span class="mw-row-arrow">›</span>
+            </button>
+
+        </div>
+
+        <!-- SUPPORT -->
+        <div class="mw-settings-label">Support</div>
+
+        <div class="mw-settings-card">
+
+            <button
+                type="button"
+                class="mw-settings-row"
+                data-settings-target="helpPanel"
+            >
+                <span class="mw-row-icon">?</span>
+                <span class="mw-row-title">Help Center</span>
+                <span class="mw-row-arrow">›</span>
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+ <!-- ===================================
+     SETTINGS PAGE
+==================================== -->
+
+<section id="settingsPage" class="page-section" hidden>
+
+    <div class="mw-settings-page">
+
+        <h2>Settings</h2>
+
+        <p class="mw-settings-description">
+            Manage your account and preferences.
+        </p>
+
+        <!-- MANAGE PROFILE -->
+        <div id="manageProfilePanel" class="mw-panel">
+
+            <h3>Manage Profile</h3>
+
+            <form id="profileForm">
+
+                <label for="profileNameInput">
+                    Display Name
                 </label>
 
                 <input
                     type="text"
-                    id="editExpenseDescription"
+                    id="profileNameInput"
+                    minlength="2"
+                    maxlength="100"
+                    required
                 >
-            </div>
 
-            <div class="form-group">
-                <label for="editExpenseDate">
-                    Date
+                <label for="profileEmailInput">
+                    Email Address
                 </label>
 
                 <input
-                    type="date"
-                    id="editExpenseDate"
+                    type="email"
+                    id="profileEmailInput"
+                    readonly
+                >
+
+                <p class="mw-input-hint">
+                    Email changes require verification.
+                </p>
+
+                <button type="submit" class="mw-primary-btn">
+                    Save Changes
+                </button>
+
+            </form>
+
+            <p id="profileMessage" role="status"></p>
+
+        </div>
+
+        <!-- PASSWORD & SECURITY -->
+        <div id="securityPanel" class="mw-panel" hidden>
+
+            <h3>Password & Security</h3>
+
+            <form id="changePasswordForm">
+
+                <label for="currentPassword">
+                    Current Password
+                </label>
+
+                <input
+                    type="password"
+                    id="currentPassword"
+                    autocomplete="current-password"
                     required
                 >
-            </div>
 
-            <div class="modal-actions">
+                <label for="newPassword">
+                    New Password
+                </label>
+
+                <input
+                    type="password"
+                    id="newPassword"
+                    minlength="12"
+                    autocomplete="new-password"
+                    required
+                >
+
+                <button type="submit" class="mw-primary-btn">
+                    Change Password
+                </button>
+
+            </form>
+
+            <p id="passwordMessage" role="status"></p>
+
+        </div>
+
+        <!-- NOTIFICATIONS -->
+        <div id="notificationsPanel" class="mw-panel" hidden>
+
+            <h3>Notifications</h3>
+
+            <label class="mw-toggle-row">
+
+                <span>Enable Notifications</span>
+
+                <input
+                    type="checkbox"
+                    id="notificationsEnabled"
+                    checked
+                >
+
+            </label>
+
+            <p class="mw-input-hint">
+                Saves your notification preference.
+                Notification delivery is not configured yet.
+            </p>
+
+        </div>
+
+        <!-- LANGUAGE -->
+        <div id="languagePanel" class="mw-panel" hidden>
+
+            <h3>Language</h3>
+
+            <label for="languageSelect">
+                Choose Language
+            </label>
+
+            <select id="languageSelect">
+                <option value="en">English</option>
+                <option value="ja">日本語</option>
+                <option value="my">မြန်မာဘာသာ</option>
+                <option value="zh">中文</option>
+            </select>
+
+        </div>
+
+        <!-- THEME -->
+        <div id="themePanel" class="mw-panel" hidden>
+
+            <h3>Appearance</h3>
+
+            <label for="themeSelect">
+                Theme
+            </label>
+
+            <select id="themeSelect">
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+            </select>
+
+        </div>
+
+        <!-- ABOUT -->
+        <div id="aboutPanel" class="mw-panel" hidden>
+
+            <h3>About MoneyWise</h3>
+
+            <p>
+                MoneyWise helps you track income,
+                expenses and available balance.
+            </p>
+
+        </div>
+
+        <!-- HELP -->
+        <div id="helpPanel" class="mw-panel" hidden>
+
+            <h3>Help Center</h3>
+
+            <p>
+                Need assistance with MoneyWise?
+            </p>
+
+            <p>
+                Support contact information will be
+                available when the service launches.
+            </p>
+
+        </div>
+
+        <p id="preferencesMessage" role="status"></p>
+
+        <!-- LOGOUT -->
+        <div class="mw-logout-section">
+
+            <button
+                id="logoutButton"
+                type="button"
+                class="settings-logout-btn"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+        </div>
+        <!-- END APP CONTENT -->
+
+
+        <!-- =========================
+             MOBILE BOTTOM NAVIGATION
+        ========================== -->
+        <nav class="mobile-nav">
+
+            <button
+                type="button"
+                class="mobile-nav-item active"
+                data-page="dashboard"
+            >
+                Home
+            </button>
+
+            <button
+                type="button"
+                class="mobile-nav-item"
+                data-page="manage"
+            >
+                Manage
+            </button>
+
+            <button
+                type="button"
+                class="mobile-nav-item"
+                data-page="transactions"
+            >
+                Transactions
+            </button>
+
+            <button
+                type="button"
+                class="mobile-nav-item"
+                data-page="profile"
+            >
+                Profile
+            </button>
+
+            <button
+                type="button"
+                class="mobile-nav-item"
+                data-page="settings"
+            >
+                Settings
+            </button>
+
+        </nav>
+
+    </main>
+    <!-- END MAIN APPLICATION -->
+
+
+    <!-- =========================
+         EDIT EXPENSE MODAL
+    ========================== -->
+    <div id="editModal" class="modal">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2>Edit Expense</h2>
+
                 <button
                     type="button"
-                    class="cancel-btn"
+                    class="close-btn"
                     onclick="closeEditModal()"
                 >
-                    Cancel
+                    ×
                 </button>
 
-                <button
-                    type="submit"
-                    class="save-btn"
-                >
-                    Save Changes
-                </button>
             </div>
 
-        </form>
+            <form id="editExpenseForm">
 
-    </div>
+                <div class="form-group">
 
-</div>
+                    <label for="editExpenseCategory">
+                        Category
+                    </label>
 
+                    <select
+                        id="editExpenseCategory"
+                        required
+                    >
+                        <option value="">Select category</option>
+                        <option value="5">Food</option>
+                        <option value="6">Drink</option>
+                        <option value="7">Cigarette</option>
+                        <option value="8">Alcohol</option>
+                        <option value="9">Transportation</option>
+                        <option value="10">Shopping</option>
+                        <option value="11">Entertainment</option>
+                        <option value="12">Healthcare</option>
+                        <option value="13">Rent</option>
+                        <option value="14">Electricity</option>
+                        <option value="15">Water</option>
+                        <option value="16">Phone</option>
+                        <option value="17">Insurance</option>
+                        <option value="18">Tax</option>
+                        <option value="19">Groceries</option>
+                        <option value="20">Other</option>
+                    </select>
 
-<div id="editIncomeModal" class="modal">
+                </div>
 
-    <div class="modal-content">
+                <div class="form-group">
 
-        <div class="modal-header">
+                    <label for="editExpenseAmount">
+                        Amount (¥)
+                    </label>
 
-            <h2>Edit Income</h2>
+                    <input
+                        type="number"
+                        id="editExpenseAmount"
+                        min="1"
+                        required
+                    >
 
-            <button
-                type="button"
-                class="close-btn"
-                onclick="closeIncomeModal()"
-            >
-                ×
-            </button>
+                </div>
+
+                <div class="form-group">
+
+                    <label for="editExpenseDescription">
+                        Description
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editExpenseDescription"
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="editExpenseDate">
+                        Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="editExpenseDate"
+                        required
+                    >
+
+                </div>
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        class="cancel-btn"
+                        onclick="closeEditModal()"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="save-btn"
+                    >
+                        Save Changes
+                    </button>
+
+                </div>
+
+            </form>
 
         </div>
 
-        <form id="editIncomeForm">
+    </div>
 
-            <div class="form-group">
 
-                <label for="editIncomeCategory">
-                    Income Type
-                </label>
+    <!-- =========================
+         EDIT INCOME MODAL
+    ========================== -->
+    <div id="editIncomeModal" class="modal">
 
-                <select
-                    id="editIncomeCategory"
-                    required
-                >
-                    <option value="">Select income type</option>
-                    <option value="1">Salary</option>
-                    <option value="2">Part-time Job</option>
-                    <option value="3">Bonus</option>
-                    <option value="4">Other Income</option>
-                </select>
+        <div class="modal-content">
 
-            </div>
+            <div class="modal-header">
 
-            <div class="form-group">
-
-                <label for="editIncomeAmount">
-                    Amount (¥)
-                </label>
-
-                <input
-                    type="number"
-                    id="editIncomeAmount"
-                    min="1"
-                    required
-                >
-
-            </div>
-
-            <div class="form-group">
-
-                <label for="editIncomeDescription">
-                    Description
-                </label>
-
-                <input
-                    type="text"
-                    id="editIncomeDescription"
-                >
-
-            </div>
-
-            <div class="form-group">
-
-                <label for="editIncomeDate">
-                    Date
-                </label>
-
-                <input
-                    type="date"
-                    id="editIncomeDate"
-                    required
-                >
-
-            </div>
-
-            <div class="modal-actions">
+                <h2>Edit Income</h2>
 
                 <button
                     type="button"
-                    class="cancel-btn"
+                    class="close-btn"
                     onclick="closeIncomeModal()"
                 >
-                    Cancel
-                </button>
-
-                <button
-                    type="submit"
-                    class="save-btn"
-                >
-                    Save Changes
+                    ×
                 </button>
 
             </div>
 
-        </form>
+            <form id="editIncomeForm">
+
+                <div class="form-group">
+
+                    <label for="editIncomeCategory">
+                        Income Type
+                    </label>
+
+                    <select
+                        id="editIncomeCategory"
+                        required
+                    >
+                        <option value="">Select income type</option>
+                        <option value="1">Salary</option>
+                        <option value="2">Part-time Job</option>
+                        <option value="3">Bonus</option>
+                        <option value="4">Other Income</option>
+                    </select>
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="editIncomeAmount">
+                        Amount (¥)
+                    </label>
+
+                    <input
+                        type="number"
+                        id="editIncomeAmount"
+                        min="1"
+                        required
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="editIncomeDescription">
+                        Description
+                    </label>
+
+                    <input
+                        type="text"
+                        id="editIncomeDescription"
+                    >
+
+                </div>
+
+                <div class="form-group">
+
+                    <label for="editIncomeDate">
+                        Date
+                    </label>
+
+                    <input
+                        type="date"
+                        id="editIncomeDate"
+                        required
+                    >
+
+                </div>
+
+                <div class="modal-actions">
+
+                    <button
+                        type="button"
+                        class="cancel-btn"
+                        onclick="closeIncomeModal()"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="save-btn"
+                    >
+                        Save Changes
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
 
     </div>
 
-</div>
 
-    <div id="editIncomeModal" class="modal">
-
-
-
-    <div class="modal-content">
-
-
-
-        <div class="modal-header">
-
-
-
-            <h2>Edit Income</h2>
-
-
-
-            <button
-
-                type="button"
-
-                class="close-btn"
-
-                onclick="closeIncomeModal()"
-
-            >
-
-                ×
-
-            </button>
-
-
-
-        </div>
-
-
-
-        <form id="editIncomeForm">
-
-
-
-            <div class="form-group">
-
-
-
-                <label for="editIncomeCategory">
-
-                    Income Type
-
-                </label>
-
-
-
-                <select
-
-                    id="editIncomeCategory"
-
-                    required
-
-                >
-
-                    <option value="">Select income type</option>
-
-                    <option value="1">Salary</option>
-
-                    <option value="2">Part-time Job</option>
-
-                    <option value="3">Bonus</option>
-
-                    <option value="4">Other Income</option>
-
-                </select>
-
-
-
-            </div>
-
-
-
-            <div class="form-group">
-
-
-
-                <label for="editIncomeAmount">
-
-                    Amount (¥)
-
-                </label>
-
-
-
-                <input
-
-                    type="number"
-
-                    id="editIncomeAmount"
-
-                    min="1"
-
-                    required
-
-                >
-
-
-
-            </div>
-
-
-
-            <div class="form-group">
-
-
-
-                <label for="editIncomeDescription">
-
-                    Description
-
-                </label>
-
-
-
-                <input
-
-                    type="text"
-
-                    id="editIncomeDescription"
-
-                >
-
-
-
-            </div>
-
-
-
-            <div class="form-group">
-
-
-
-                <label for="editIncomeDate">
-
-                    Date
-
-                </label>
-
-
-
-                <input
-
-                    type="date"
-
-                    id="editIncomeDate"
-
-                    required
-
-                >
-
-
-
-            </div>
-
-
-
-            <div class="modal-actions">
-
-
-
-                <button
-
-                    type="button"
-
-                    class="cancel-btn"
-
-                    onclick="closeIncomeModal()"
-
-                >
-
-                    Cancel
-
-                </button>
-
-
-
-                <button
-
-                    type="submit"
-
-                    class="save-btn"
-
-                >
-
-                    Save Changes
-
-                </button>
-
-
-
-            </div>
-
-
-
-        </form>
-
-
-
-    </div>
-
-
-
-</div>
-
-
-
-</div>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script src="script.js"></script>
-
-
-
-
+    <!-- =========================
+         JAVASCRIPT
+    ========================== -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
 
 </body>
-
-
-
 </html>
